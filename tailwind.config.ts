@@ -6,6 +6,17 @@ export default {
         './components/**/*.{js,ts,jsx,tsx,mdx}',
         './app/**/*.{js,ts,jsx,tsx,mdx}'
     ],
-    theme: {},
-    plugins: []
+    theme: {
+        extend: {
+            margin: {
+                'too-high': '120px'
+            },
+            borderRadius: {
+                'sexy-name': '11.11px'
+            }
+        }
+    },
+    plugins: [
+        require('@tailwindcss/forms') // 플러그인 추가
+    ]
 } satisfies Config;
