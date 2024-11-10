@@ -5,9 +5,13 @@ import SocialLogin from '@/components/social-login';
 export default function Login() {
     async function handleForm(formData: FormData) {
         'use server';
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        console.log('logged in!');
+
         console.log(formData.get('email'), formData.get('password'));
         console.log('I run in the server baby!');
     }
+
     return (
         <div className="flex flex-col gap-10 py-8 px-6">
             <div className="flex flex-col gap-2 *:font-medium">
@@ -17,7 +21,7 @@ export default function Login() {
             <form action={handleForm} className="flex flex-col gap-3">
                 <FormInput name="email" type="email" placeholder="Email" required errors={[]} />
                 <FormInput name="password" type="password" placeholder="Password" required errors={[]} />
-                <FormButton loading={false} text="Log in" />
+                <FormButton text="Log in" />
             </form>
 
             <SocialLogin />
