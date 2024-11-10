@@ -12,7 +12,7 @@ export default function SocialLogin() {
                     </span>
                     <span>Continue with SNS</span>
                 </Link>
-                <Link className="primary-btn flex h-10 items-center justify-center gap-3" href="/sms">
+                <Link className="primary-btn flex h-10 items-center justify-center gap-3" href="/github/start">
                     <span className="size-6">
                         <FaGithub />
                     </span>
