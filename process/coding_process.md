@@ -52,3 +52,20 @@ export async function handleForm(prevState: any, formData: FormData) {
     };
 }
    ```
+   여러 절차가 있는 form을 만드는데에 아주 유리하다. 
+   나중에 sms인증을 할 때도, 
+   1. 처음에 사용자의 전화번호를 null값으로 넣고 sms인증를 보내고, 
+   2. sms 인증코드를 보내고 , 
+   3. sms인증 코드가 맞는지 토큰을 확인하는 로직을 넣고, 
+    이걸 한번 더 호출하며 사용자를 로그인하거나, 에러를 보여 줄 수 있다. 
+
+    기억해야 할건, useFormState를 사용해서, 처음 action을 호출하면, 이 action은 초기 상태인 null 과 함께 호출이 된다. 
+
+
+    여기서는 state를 조작하거나, onChange같은 이벤트 핸들러를 쓰지 않고, 
+    사용자가 UI를 통해 입력한 데이터는 
+    내가 작성한 action의 formData로만 간다, 
+    input값에 name의 값이 있다면 말이다. 
+
+    모든 input 값에 name 속성을 설정해야 한다. 
+    이렇게 하지 않으면, action에 필요한 data가 formData에 포함되지 않을 것이다.  
