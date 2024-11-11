@@ -1,6 +1,10 @@
 "use server"
 import {z} from "zod";
 
+// At least one uppercase letter, one lowercase letter, one number and one special character
+const passwordRegex = new RegExp(
+  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).+$/
+  );
 const checkUsername = (username: string) =>!username.includes("potato")
 
 const checkPasswords = ({password, confirm_password} : {password:string , confirm_password:string})=> password === confirm_password
@@ -12,11 +16,14 @@ const formSchema = z.object({
     required_error: "Where is my user name?"
   })
   .min(3, "Way too short!")
-  .max(10, "That is too looong!")
+  // .max(10, "That is too looong!")
+  .toLowerCase()
+  .trim()
+  .transform((username)=>`🍓 ${username}`)
   .refine(checkUsername, "No potatoes!"),
-  email : z.string().email(),
-  password : z.string().min(10),
-  confirm_password : z.string().min(10)
+  email : z.string().email().trim().toLowerCase(),
+  password : z.string().min(4).regex(passwordRegex, "A password must have lowercase, UPPERCASE, a number and special characters."),
+  confirm_password : z.string().min(4)
 }).refine(checkPasswords, { 
   message: "Both password should be the same!",
   path: ["confirm_password"],
@@ -33,5 +40,7 @@ export async function createAccount(prevState :any, formData: FormData) {
   if(!result.success) {
     console.log(result.error.flatten());
     return result.error.flatten();
+  } else {
+    console.log(result.data);
   }
 }
