@@ -25,5 +25,4 @@ import { z } from "zod";
     } else {
         console.log(result.data)
     }
-
 }
