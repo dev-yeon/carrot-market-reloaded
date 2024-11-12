@@ -42,7 +42,6 @@ export default function CreateAccount() {
                     placeholder="Confirm Password" 
                     required 
                     errors={state?.fieldErrors.confirm_password}
-               
                 />
 
                 <FormButton  text="Create account" />

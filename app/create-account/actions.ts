@@ -19,7 +19,7 @@ const formSchema = z.object({
   // .max(10, "That is too looong!")
   .toLowerCase()
   .trim()
-  .transform((username)=>`🍓 ${username}`)
+  // .transform((username)=>`🍓 ${username}`)
   .refine(checkUsername, "No potatoes!"),
   email : z.string().email().trim().toLowerCase(),
   password : z.string().min(4).regex(passwordRegex, "A password must have lowercase, UPPERCASE, a number and special characters."),
