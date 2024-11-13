@@ -3,6 +3,9 @@ import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX, PASSWORD_REGEX_ERROR } from '@/lib
 import db from '@/lib/db';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
+import { getIronSession } from 'iron-session';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 // At least one uppercase letter, one lowercase letter, one number and one special character
 
@@ -61,6 +64,7 @@ const formSchema = z
     });
 
 export async function createAccount(prevState: any, formData: FormData) {
+    console.log(cookies());
     const data = {
         username: formData.get('username'),
         email: formData.get('email'),
@@ -84,6 +88,19 @@ export async function createAccount(prevState: any, formData: FormData) {
                 id: true
             }
         });
-        console.log(user);
+        // log the user in
+        const cookieStore = await cookies();
+        const cookie = await getIronSession(cookieStore, {
+            password: process.env.COOKIE_PASSWORD! || '32자_이상의_임의의_긴_비밀번호',
+            cookieName: 'delicious-carrot',
+            cookieOptions: {
+                secure: process.env.COOKIE_PASSWORD === 'production' // production 환경에서는 secure 옵션을 활성화
+            }
+        });
+        //@ts-ignore
+        cookie.id = user.id;
+        //redirect "/home"
+        await cookie.save();
+        redirect('/profile');
     }
 }
