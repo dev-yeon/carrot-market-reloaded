@@ -1,20 +1,34 @@
-
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  username String @unique 
-  email String? @unique
-  password String? 
-  phone String? @unique
-  github_id String? @unique 
-  avatar String? 
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  email      String?  @unique
+  password   String?
+  phone      String?  @unique
+  github_id  String?  @unique
+  avatar     String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  SMSToken SMSToken[]
 }
+
+model SMSToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+}
+
+// person ---> User's phone ---> sms (token)
+// token ---> SMSToken(search in our db) <--connected--> User(find our db) -> log the user in  

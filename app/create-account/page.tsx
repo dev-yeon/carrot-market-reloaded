@@ -1,10 +1,10 @@
-"use client"
-import React, { useActionState } from "react"; 
+'use client';
+import React, { useActionState } from 'react';
 import Input from '@/components/input';
 import Button from '@/components/button';
 import SocialLogin from '@/components/social-login';
 import { createAccount } from './actions';
-import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
+import { PASSWORD_MIN_LENGTH } from '@/lib/constants';
 
 export default function CreateAccount() {
     const [state, dispatch] = useActionState(createAccount, null);
@@ -15,37 +15,31 @@ export default function CreateAccount() {
                 <h2 className="text-xl">Log in with email and password</h2>
             </div>
             <form action={dispatch} className="flex flex-col gap-3">
-                <Input 
-                    name='username' 
-                    type="text" 
-                    placeholder="Username" 
-                    required  
+                <Input
+                    name="username"
+                    type="text"
+                    placeholder="Username"
+                    required
                     errors={state?.fieldErrors.username}
                 />
-                <Input 
-                    name="email" 
-                    type="email" 
-                    placeholder="Email" 
-                    required  
-                    errors={state?.fieldErrors.email}
-                />
-                <Input 
+                <Input name="email" type="email" placeholder="Email" required errors={state?.fieldErrors.email} />
+                <Input
                     name="password"
-                    type="password" 
-                    placeholder="Password" 
+                    type="password"
+                    placeholder="Password"
                     minLength={PASSWORD_MIN_LENGTH}
-                    required  
+                    required
                     errors={state?.fieldErrors.password}
                 />
-                <Input 
+                <Input
                     name="confirm_password"
-                    type="password" 
-                    placeholder="Confirm Password" 
+                    type="password"
+                    placeholder="Confirm Password"
                     minLength={PASSWORD_MIN_LENGTH}
-                    required 
+                    required
                     errors={state?.fieldErrors.confirm_password}
                 />
-                <Button  text="Create account" />
+                <Button text="Create account" />
             </form>
             <SocialLogin />
         </div>
