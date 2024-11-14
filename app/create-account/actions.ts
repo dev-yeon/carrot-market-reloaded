@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import getSession from '@/lib/session';
 
 // At least one uppercase letter, one lowercase letter, one number and one special character
 
@@ -89,18 +90,12 @@ export async function createAccount(prevState: any, formData: FormData) {
             }
         });
         // log the user in
-        const cookieStore = await cookies();
-        const cookie = await getIronSession(cookieStore, {
-            password: process.env.COOKIE_PASSWORD! || '32자_이상의_임의의_긴_비밀번호',
-            cookieName: 'delicious-carrot',
-            cookieOptions: {
-                secure: process.env.COOKIE_PASSWORD === 'production' // production 환경에서는 secure 옵션을 활성화
-            }
-        });
-        //@ts-ignore
-        cookie.id = user.id;
+        // const cookieStore = await cookies();
+        const session = await getSession();
+
+        session.id = user.id;
         //redirect "/home"
-        await cookie.save();
+        await session.save();
         redirect('/profile');
     }
 }
