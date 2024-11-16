@@ -62,7 +62,8 @@ export async function login(prevState: any, formData: FormData) {
         } else {
             return {
                 fieldErrors: {
-                    password: ['Wrong Password.']
+                    password: ['Wrong Password.'],
+                    email: []
                 }
             };
         }
