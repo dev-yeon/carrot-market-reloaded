@@ -14,6 +14,7 @@ async function getUser() {
             return user;
         }
     }
+    //session이 ID가 없는 경우, notFound가 실행되 링크로 접속해도 페이지 보호 가능
     notFound();
 }
 

@@ -1,16 +1,12 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes } from 'react';
 
 interface InputProps {
     name: string;
     errors?: string[];
 }
 
-export default function FormInput({ 
-    errors = [], 
-    name,
-    ...rest
-}: InputProps & InputHTMLAttributes<HTMLInputElement>) {
-    console.log(rest)
+export default function FormInput({ errors = [], name, ...rest }: InputProps & InputHTMLAttributes<HTMLInputElement>) {
+    console.log(rest);
     return (
         <div className="flex flex-col gap-4">
             <input
@@ -22,9 +18,7 @@ export default function FormInput({
                 name={name}
             />
             {errors.map((error, index) => (
-                <span 
-                    key={index} 
-                    className="text-red-500 font-medium">
+                <span key={index} className="text-red-500 font-medium">
                     {errors}
                 </span>
             ))}
