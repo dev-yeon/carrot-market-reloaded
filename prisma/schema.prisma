@@ -19,6 +19,7 @@ model User {
   updated_at DateTime @updatedAt
 
   SMSToken SMSToken[]
+  Product  Product[]
 }
 
 model SMSToken {
@@ -32,3 +33,15 @@ model SMSToken {
 
 // person ---> User's phone ---> sms (token)
 // token ---> SMSToken(search in our db) <--connected--> User(find our db) -> log the user in  
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  price       Float
+  description String
+  photo       String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  userId      Int
+}
