@@ -2,7 +2,7 @@
 
 
 import { z } from "zod";
-import fs from "fs/promises";
+ 
 import db from "@/lib/db";
 import getSession from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -29,16 +29,8 @@ export async function uploadProduct (_:any,  formData: FormData) {
     title: formData.get('title'),
     price: formData.get('price'),
     description: formData.get('description'),
-  }
-  if(data.photo instanceof File) {
-    const photoData = await data.photo.arrayBuffer(); // 파일을 바이너리 데이터로 변환 
-    await fs.appendFile(`./public/${data.photo.name}`, Buffer.from(photoData));
-    // 파일을 바이너리 데이터로 변환하여 파일에 추가 
-    data.photo = `/${data.photo.name}`
+  };
 
-
-    // Buffer.from(photoData) 는 바이너리 데이터를 Buffer 객체로 변환 
-  }
   // const result = productSchema.parse(data);
   const result = productSchema.safeParse(data); 
   //safeParse 는 데이터를 검증하고 결과를 반환 
@@ -73,3 +65,27 @@ export async function uploadProduct (_:any,  formData: FormData) {
     }
   }
 
+
+
+export async function getUploadUrl(file: File) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('API 응답:', data);  // 응답 확인
+    return data;
+    
+  } catch (error) {
+    console.error('getUploadUrl 에러:', error);
+    throw error;
+  }
+}

@@ -2,26 +2,52 @@
 import Button from '@/components/button';
 import Input from '@/components/input';
 import { PhotoIcon } from '@heroicons/react/24/solid';
-import React, { useState } from 'react';
-import { uploadProduct } from './actions';
-import { useFormState } from 'react-dom';
+import React, { useCallback, useState } from 'react';
+import { getUploadUrl, uploadProduct } from './actions';
+import { useActionState } from 'react';
 
 export default function AddProduct() {
+    // useFormState를 최상단으로 이동
+    const [state, formAction] = useActionState(uploadProduct, null);
     const [preview, setPreview] = useState('');
-    const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { 
-            target: {files}
-        } = event;
+    const [uploadUrl, setUploadUrl] = useState(''); 
+
+    // useCallback으로 이벤트 핸들러 메모이제이션
+    const onImageChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { target: {files} } = event;
         if (!files) return;
         const file = files[0];
-        const url = URL.createObjectURL(file); // create URL 
-        setPreview(url);
-    };
-    const [state, action] = useFormState(uploadProduct, null);
+        
+        // 비동기 작업을 try-catch로 감싸기
+        // try {
+        //     setPreview(URL.createObjectURL(file));
+        //     const response = await getUploadUrl(file);
+        //     console.log(response);
+        //     setUploadUrl(response.uploadURL);
+        // } catch (error) {
+        //     console.error('Image upload error:', error);
+        // }
+        try {
+            console.log('파일 업로드 시작:', file);  // 파일 객체 확인
+            setPreview(URL.createObjectURL(file));
+            
+            console.log('getUploadUrl 호출 전');
+            const response = await getUploadUrl(file);
+            console.log('getUploadUrl 응답:', response);
+            
+            if (!response) {
+                throw new Error('업로드 URL을 받지 못했습니다');
+            }
+            
+            setUploadUrl(response.uploadURL);
+        } catch (error) {
+            console.error('상세 에러:', error);  // 더 자세한 에러 정보
+        }
+    }, []);
     return (
         <div>
             <form 
-            action={action}
+            action={formAction}
             className="p-5 flex flex-col gap-5">
                 <label
                     htmlFor="photo"
