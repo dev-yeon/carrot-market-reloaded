@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 hostname: 'avatars.githubusercontent.com'
+            },
+            {
+                hostname: 'imagedelivery.net' // 허용할 도메인 추가
             }
         ]
     }
