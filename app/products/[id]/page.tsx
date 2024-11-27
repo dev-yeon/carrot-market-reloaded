@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       return notFound();
     }
       // 여기에서 이미지 URL을 출력합니다.
-  console.log('Product photo URL:', product.photo);
+//   console.log('Product photo URL:', product.photo);
   
   const isOwner = await getIsOwner(product.userId);
   const revalidate = async () => {

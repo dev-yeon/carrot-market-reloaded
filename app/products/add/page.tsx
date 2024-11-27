@@ -22,10 +22,10 @@ export default function AddProduct() {
     setPreview(url);
     const { success, result } = await getUploadUrl();
     if (success && result) {
-      console.log("Upload URL result:", result); // 결과 확인
+      // console.log("Upload URL result:", result); // 결과 확인
       const { id, uploadURL } = result;
-      console.log("ID:", id); // id 값 확인
-      console.log("Upload URL:", uploadURL); // uploadURL 값 확인
+      // console.log("ID:", id); // id 값 확인
+      // console.log("Upload URL:", uploadURL); // uploadURL 값 확인
       setUploadUrl(uploadURL);
       setImageId(id);
     } else {
@@ -44,17 +44,17 @@ export default function AddProduct() {
       method: "post",
       body: cloudflareForm,
     });
-    console.log(await response.text());
+    // console.log(await response.text());
     if (response.status !== 200) {
       console.error("Upload failed:", await response.text());
       return;
     }
-    console.log("PhotoId in interceptAction:", photoId); // photoId 값 확인
+    // console.log("PhotoId in interceptAction:", photoId); // photoId 값 확인
     const photoUrl = `https://imagedelivery.net/x2-hEWxzt28Xj_5D6gCpFw/${photoId}`;
     formData.set("photo", photoUrl);
-    console.log("Photo ID:", photoId);
-    console.log("Upload URL:", uploadUrl);
-    console.log("Final Photo URL:", photoUrl);
+    // console.log("Photo ID:", photoId);
+    // console.log("Upload URL:", uploadUrl);
+    // console.log("Final Photo URL:", photoUrl);
     return uploadProduct(_, formData); // 
   };
   const [state, action] =  useActionState(interceptAction, null);

@@ -10,7 +10,7 @@ async function test() {
             user: true
         }
     });
-    console.log(token);
+    // console.log(token);
 }
 
 test();
