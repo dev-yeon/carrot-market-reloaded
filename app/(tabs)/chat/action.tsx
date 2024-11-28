@@ -13,6 +13,7 @@ export async function getChatRooms() {
     include: {
       messages: true, // 채팅방 메세지 정보 포함
       users: true, // 채팅방 참여자 정보 포함
+      product: true, // 채팅방 상품 정보 포함
 
     },
     orderBy: {

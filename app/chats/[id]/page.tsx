@@ -85,7 +85,8 @@ export default async function ChatRoom({ params }: { params: { id: string } }) {
     userId={session?.id!} 
     username ={userProfile.username}
     avatar ={userProfile.avatar!}
-    productId = {room.product.id}
+    productId={room.product.id}
+    // productId = {room.product.id}
     initialMessages={initialMessages} 
     
   />
