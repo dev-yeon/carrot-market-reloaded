@@ -46,11 +46,14 @@ model Product {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   userId      Int
+  chat_rooms ChatRoom[]
 }
 
 model ChatRoom {
   id         String      @id @default(cuid())
   users      User[]
+  product    Product   @relation(fields: [productId], references: [id])
+  productId  Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   messages   Message[]

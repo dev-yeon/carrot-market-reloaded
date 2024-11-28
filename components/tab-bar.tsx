@@ -1,4 +1,5 @@
 'use client';
+
 import {
     HomeIcon as SolidHomeIcon,
     NewspaperIcon as SolidNewspaperIcon,
@@ -15,54 +16,58 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
 export default function TabBar() {
     const pathname = usePathname();
-    return (
-        <div
-            className="fixed bottom-0 w-full mx-auto
-        max-w-screen-md grid grid-cols-5 border-neutral-600 border-t px-5 py-3 *:text-white bg-neutral-800"
-        >
-            <Link href="/products" className="flex flex-col items-center gap-px">
-                {pathname === '/products' ? (
-                    <SolidHomeIcon className="w-7 h-7" />
-                ) : (
-                    <OutlineHomeIcon className="w-7 h-7" />
-                )}
 
-                <span>홈</span>
-            </Link>
-            <Link href="/life" className="flex flex-col items-center gap-px">
-                {pathname === '/life' ? (
-                    <SolidNewspaperIcon className="w-7 h-7" />
-                ) : (
-                    <OutlineNewspaperIcon className="w-7 h-7" />
-                )}
-                <span>동네생활</span>
-            </Link>
-            <Link href="/chat" className="flex flex-col items-center gap-px">
-                {pathname === '/chat' ? (
-                    <SolidChatBubbleOvalLeftEllipsisIcon className="w-7 h-7" />
-                ) : (
-                    <OutlineChatBubbleOvalLeftEllipsisIcon className="w-7 h-7" />
-                )}
-                <span>채팅</span>
-            </Link>
-            <Link href="/live" className="flex flex-col items-center gap-px">
-                {pathname === '/live' ? (
-                    <SolidVideoCameraIcon className="w-7 h-7" />
-                ) : (
-                    <OutlineVideoCameraIcon className="w-7 h-7" />
-                )}
-                <span>쇼핑</span>
-            </Link>
-            <Link href="/profile" className="flex flex-col items-center gap-px">
-                {pathname === '/profile' ? (
-                    <SolidUsersIcon className="w-7 h-7" />
-                ) : (
-                    <OutlineUsersIcon className="w-7 h-7" />
-                )}
-                <span>나의 당근</span>
-            </Link>
-        </div>
+    return (
+        <nav className="fixed bottom-0 left-0 right-0 mx-auto max-w-screen-md border-t border-neutral-600 bg-neutral-800">
+            <div className="grid grid-cols-5">
+                <Link href="/products" className="flex flex-col items-center justify-center p-2">
+                    {pathname === '/products' ? (
+                        <SolidHomeIcon className="h-6 w-6 text-white" />
+                    ) : (
+                        <OutlineHomeIcon className="h-6 w-6 text-white" />
+                    )}
+                    <span className="mt-1 text-xs text-white">홈</span>
+                </Link>
+
+                <Link href="/life" className="flex flex-col items-center justify-center p-2">
+                    {pathname === '/life' ? (
+                        <SolidNewspaperIcon className="h-6 w-6 text-white" />
+                    ) : (
+                        <OutlineNewspaperIcon className="h-6 w-6 text-white" />
+                    )}
+                    <span className="mt-1 text-xs text-white">동네생활</span>
+                </Link>
+
+                <Link href="/chat" className="flex flex-col items-center justify-center p-2">
+                    {pathname === '/chat' ? (
+                        <SolidChatBubbleOvalLeftEllipsisIcon className="h-6 w-6 text-white" />
+                    ) : (
+                        <OutlineChatBubbleOvalLeftEllipsisIcon className="h-6 w-6 text-white" />
+                    )}
+                    <span className="mt-1 text-xs text-white">채팅</span>
+                </Link>
+
+                <Link href="/live" className="flex flex-col items-center justify-center p-2">
+                    {pathname === '/live' ? (
+                        <SolidVideoCameraIcon className="h-6 w-6 text-white" />
+                    ) : (
+                        <OutlineVideoCameraIcon className="h-6 w-6 text-white" />
+                    )}
+                    <span className="mt-1 text-xs text-white">쇼핑</span>
+                </Link>
+
+                <Link href="/profile" className="flex flex-col items-center justify-center p-2">
+                    {pathname === '/profile' ? (
+                        <SolidUsersIcon className="h-6 w-6 text-white" />
+                    ) : (
+                        <OutlineUsersIcon className="h-6 w-6 text-white" />
+                    )}
+                    <span className="mt-1 text-xs text-white">나의 당근</span>
+                </Link>
+            </div>
+        </nav>
     );
 }

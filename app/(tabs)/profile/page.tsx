@@ -4,20 +4,30 @@ import { notFound, redirect } from 'next/navigation';
 
 async function getUser() {
     const session = await getSession();
-    if (session.id) {
-        const user = await db.user.findUnique({
-            where: {
-                id: session.id
-            }
-        });
-        if (user) {
-            return user;
-        }
+    console.log("Session:", session);
+  
+    if (!session?.id) {
+      console.log("No session ID. Redirecting to /login...");
+      redirect("/login");
+      return;
     }
-    //session이 ID가 없는 경우, notFound가 실행되 링크로 접속해도 페이지 보호 가능
-    notFound();
-}
-
+  
+    const user = await db.user.findUnique({
+      where: {
+        id: session.id,
+      },
+    });
+  
+    console.log("User:", user);
+  
+    if (!user) {
+      console.log("No user found. Redirecting to /login...");
+      redirect("/login");
+      return;
+    }
+  
+    return user;
+  }
 export default async function Profile() {
     const user = await getUser();
     const logOut = async () => {

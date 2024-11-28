@@ -22,6 +22,7 @@ async function getProduct(id: number) {
   const product = await db.product.findUnique({
     where: {
       id,
+
     },
     include: {
       user: {
@@ -46,6 +47,7 @@ async function getProductTitle(id: number) {
       id,
     },
     select: {
+
       title: true,
     },
   });
@@ -90,24 +92,52 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const createChatRoom = async () => {
     "use server";
     const session = await getSession();
+    console.log("Session:", session);
+  
+    if (!session) {
+      return redirect("/login");
+    }
+  
+    // 먼저 product를 가져옵니다.
+    const product = await db.product.findUnique({
+      where: { id: id },
+    });
+    console.log("Product:", product);
+    if (!product) {
+      throw new Error("제품을 찾을 수 없습니다.");
+    }
+  
+    // product.userId와 session.id를 사용해 사용자 확인
+    const [seller, buyer] = await Promise.all([
+      db.user.findUnique({ where: { id: product.userId } }), // 판매자 확인
+      db.user.findUnique({ where: { id: session.id } }),     // 구매자 확인
+    ]);
+    console.log("Seller:", seller);
+    console.log("Buyer:", buyer);
+  
+  
+    if (!seller || !buyer) {
+      throw new Error("판매자 또는 구매자를 찾을 수 없습니다.");
+    }
+  
+    // 채팅방 생성
     const room = await db.chatRoom.create({
       data: {
+        productId: product.id,
         users: {
           connect: [
-            {
-              id: product.userId, // 판매자
-            },
-            {
-              id: session.id, // 구매자 //session은 로그인 한 사람 
-            },
+            { id: seller.id }, // 판매자 연결
+            { id: buyer.id },  // 구매자 연결
           ],
         },
       },
       select: {
         id: true,
+        productId: true,
       },
     });
-    redirect(`/chats/${room.id}`); // 채팅방으로 이동 
+  
+    redirect(`/chats/${room.id}`);
   };
   return (
     <div className="pb-40">
@@ -140,23 +170,27 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         <h1 className="text-2xl font-semibold">{product.title}</h1>
         <p>{product.description}</p>
       </div>
-      <div className="fixed w-full bottom-0  p-5 pb-10 bg-neutral-800 flex justify-between items-center max-w-screen-sm">
-        <span className="font-semibold text-xl">
-          {formatToWon(product.price)}원
+      <nav className="fixed bottom-[0px] left-0 right-0 mx-auto max-w-screen-md border-t border-neutral-600 bg-neutral-800">
+    <div className="flex items-center justify-between px-6 py-3">
+        <span className="font-semibold text-xl text-white">
+            {formatToWon(product.price)}원
         </span>
-        {isOwner ? (
-          <form action={revalidate}>
-            <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
-              Revalidate title cache
-            </button>
-          </form>
-        ) : null}
-        <form action={createChatRoom}>
-          <button className="bg-orange-500 px-5 py-2.5 rounded-md text-white font-semibold">
-            채팅하기
-          </button>
-        </form>
-      </div>
+        <div className="flex gap-2">
+            {isOwner ? (
+                <form action={revalidate}>
+                    <button className="bg-red-500 px-4 py-2.5 rounded-md text-white text-sm font-medium hover:bg-red-600 transition-colors">
+                        Revalidate title cache
+                    </button>
+                </form>
+            ) : null}
+            <form action={createChatRoom}>
+                <button className="bg-orange-500 px-4 py-2.5 rounded-md text-white text-sm font-medium hover:bg-orange-600 transition-colors">
+                    채팅하기
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
     </div>
   );
 }
