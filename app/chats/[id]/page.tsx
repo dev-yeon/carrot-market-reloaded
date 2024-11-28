@@ -59,5 +59,6 @@ export default async function ChatRoom({ params }: { params: { id: string } }) {
  
   const initialMessages = await getMessages(params.id);
   const session = await getSession();
-  return <ChatMessagesList userId={session?.id!} initialMessages={initialMessages} />
+  // 채팅방 id, 사용자 id, 초기 메세지를 전달
+  return <ChatMessagesList chatRoomId = {params.id} userId={session?.id!} initialMessages={initialMessages} />
 } 
