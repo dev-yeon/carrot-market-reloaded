@@ -11,7 +11,9 @@ const publicOnlyUrls: Routes = {
     '/': true,
     '/login': true,
     '/sms': true,
-    '/create-account': true
+    '/create-account': true,
+    "/github/start" : true,
+    "/github/complete": true,
 };
 
 // response를 나타내는 fetch API
