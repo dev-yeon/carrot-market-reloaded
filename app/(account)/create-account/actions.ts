@@ -5,36 +5,37 @@ import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import { redirect } from 'next/navigation';
 import getSession from '@/lib/session';
+import UpdateSession from "@/lib/session/updateSession";
 
 // At least one uppercase letter, one lowercase letter, one number and one special character
 
 const checkPasswords = ({ password, confirm_password }: { password: string; confirm_password: string }) =>
     password === confirm_password;
 
-// const checkUniqueUsername = async (username: string) => {
-//     const user = await db.user.findUnique({
-//         where: {
-//             username
-//         },
-//         select: {
-//             id: true
-//         }
-//     });
-//     return !Boolean(user);
-// };
+const checkUniqueUsername = async (username: string) => {
+    const user = await db.user.findUnique({
+        where: {
+            username
+        },
+        select: {
+            id: true
+        }
+    });
+    return !Boolean(user);
+};
 
-// const checkUniqueEmail = async (email: string) => {
-//     const user = await db.user.findUnique({
-//         where: {
-//             email
-//         },
-//         select: {
-//             id: true
-//         }
-//     });
-//     return !Boolean(user);
-//     // user을 찾으면 false, 못 찾으면 true를 반환함.
-// };
+const checkUniqueEmail = async (email: string) => {
+    const user = await db.user.findUnique({
+        where: {
+            email
+        },
+        select: {
+            id: true
+        }
+    });
+    return !Boolean(user);
+    // user을 찾으면 false, 못 찾으면 true를 반환함.
+};
 
 const formSchema = z
     .object({
@@ -125,11 +126,12 @@ export async function createAccount(prevState: any, formData: FormData) {
         });
         // log the user in
 
-        const session = await getSession();
+        // const session = await getSession();
 
-        session.id = user.id;
-        //redirect "/home"
-        await session.save();
-        redirect('/profile');
+        // session.id = user.id;
+        // //redirect "/home"
+        // await session.save();
+        // redirect('/profile');\
+        await UpdateSession(user.id);
     }
 }

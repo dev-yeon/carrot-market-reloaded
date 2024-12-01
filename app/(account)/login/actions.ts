@@ -6,7 +6,7 @@ import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import getSession from '@/lib/session';
 import { redirect } from 'next/navigation';
-
+import UpdateSession from "@/lib/session/updateSession";
 const checkEmailExists = async (email: string) => {
     const user = await db.user.findUnique({
         where: {
@@ -55,9 +55,10 @@ export async function login(prevState: any, formData: FormData) {
 
         if (passwordOk) {
             //log the user in!
-            const session = await getSession();
-            session.id = user!.id;
-            await session.save(); // session을 변경할때마다 cookie에 유지
+            // const session = await getSession();
+            // session.id = user!.id;
+            // await session.save(); // session을 변경할때마다 cookie에 유지
+            await UpdateSession(user!.id);
             redirect('/profile');
         } else {
             return {

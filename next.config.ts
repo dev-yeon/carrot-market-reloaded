@@ -14,7 +14,15 @@ const nextConfig: NextConfig = {
                 hostname: 'imagedelivery.net' // 허용할 도메인 추가
             }
         ]
-    }
+    },
+    async rewrites() {
+        return [
+          {
+            source: "/api/github/:path*", // 프록시 경로
+            destination: "https://github.com/:path*", // GitHub API로 요청 전달
+          },
+        ];
+      },
 };
 
 export default nextConfig;

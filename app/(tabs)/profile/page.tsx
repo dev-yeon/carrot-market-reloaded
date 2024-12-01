@@ -1,45 +1,38 @@
-import db from '@/lib/db';
-import getSession from '@/lib/session';
-import { notFound, redirect } from 'next/navigation';
+import PrismaDB from "@/lib/db";
+import getSession from "@/lib/session/getSession";
+import { notFound, redirect } from "next/navigation";
 
 async function getUser() {
     const session = await getSession();
-    console.log("Session user id:", session?.id);
-    console.log("Session:", session);
-    if (!session || !session.id) {
-        notFound();
-    }
+    if (session.id) {
+        const user = await PrismaDB.user.findUnique({
+            where: {
+                id: session.id,
+            },
+        });
 
-    const user = await db.user.findUnique({
-        where: { id: session.id },
-    });
-    console.log("User:", user);
-    if (!user) {
-        //redirect("/login");
-        notFound();
+        if (user) {
+            return user;
+        }
     }
-
-    return user;
+    notFound();
 }
 
 export default async function Profile() {
     const user = await getUser();
-    const logOut = async () => {
-        'use server';
-        //inline server action
-        //button 이 눌릴때 마다, form을 submit 한다.
-        //cookie 을 삭제하여 log in -> log out
+
+    async function logout() {
+        "use server";
         const session = await getSession();
-        if (session) {
-            await session.destroy();
-        }
-        redirect("/login"); // 로그아웃 후 로그인 페이지로 이동
-    };
+        session.destroy();
+        redirect("/");
+    }
+
     return (
         <div>
-            <h1>Welcome {user?.username}!</h1>
-            <form action={logOut}>
-                <button>Log out</button>
+            <h1>This is profile page {user?.username}</h1>
+            <form action={logout}>
+                <button type="submit">logout</button>
             </form>
         </div>
     );
