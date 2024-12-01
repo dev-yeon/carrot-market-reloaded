@@ -23,6 +23,8 @@ async function findExistingChatRoom(productId: string, userId: string) {
         { users: { some: { id: parseInt(userId, 10) } } }, // 사용자 조건
         { product: { id: parseInt(productId, 10) } }, // 관계를 통해 Product.id로 필터링
       ],
+      
     },
   });
+  
 }

@@ -89,8 +89,59 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     "use server";
     revalidateTag("xxxx");
   };
-  const createChatRoom = async () => {
+  // const createChatRoom = async () => {
+  //   "use server";
+  //   const session = await getSession();
+  //   console.log("Session:", session);
+  
+  //   if (!session) {
+  //     return redirect("/login");
+  //   }
+  
+  //   // 먼저 product를 가져옵니다.
+  //   const product = await db.product.findUnique({
+  //     where: { id: id },
+  //   });
+  //   console.log("Product:", product);
+  //   if (!product) {
+  //     throw new Error("제품을 찾을 수 없습니다.");
+  //   }
+  
+  //   // product.userId와 session.id를 사용해 사용자 확인
+  //   const [seller, buyer] = await Promise.all([
+  //     db.user.findUnique({ where: { id: product.userId } }), // 판매자 확인
+  //     db.user.findUnique({ where: { id: session.id } }),     // 구매자 확인
+  //   ]);
+  //   console.log("Seller:", seller);
+  //   console.log("Buyer:", buyer);
+  
+  
+  //   if (!seller || !buyer) {
+  //     throw new Error("판매자 또는 구매자를 찾을 수 없습니다.");
+  //   }
+  
+  //   // 채팅방 생성
+  //   const room = await db.chatRoom.create({
+  //     data: {
+  //       productId: product.id,
+  //       users: {
+  //         connect: [
+  //           { id: seller.id }, // 판매자 연결
+  //           { id: buyer.id },  // 구매자 연결
+  //         ],
+  //       },
+  //     },
+  //     select: {
+  //       id: true,
+  //       productId: true,
+  //     },
+  //   });
+  
+  //   redirect(`/chats/${room.id}`);
+  // };
+  const createChatRoom = async (formData: FormData) => {
     "use server";
+  
     const session = await getSession();
     console.log("Session:", session);
   
@@ -98,36 +149,60 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       return redirect("/login");
     }
   
-    // 먼저 product를 가져옵니다.
+    // FormData에서 `id` 추출
+    const id = formData.get("id");
+    console.log("Extracted Product ID from FormData:", id);
+    if (!id || isNaN(Number(id))) {
+      throw new Error("유효하지 않은 Product ID입니다.");
+    }
+  
+    const numericId = Number(id);
+  
+    // Product 가져오기
     const product = await db.product.findUnique({
-      where: { id: id },
+      where: { id: numericId },
     });
     console.log("Product:", product);
+  
     if (!product) {
       throw new Error("제품을 찾을 수 없습니다.");
     }
   
-    // product.userId와 session.id를 사용해 사용자 확인
+    // 판매자 및 구매자 확인
     const [seller, buyer] = await Promise.all([
-      db.user.findUnique({ where: { id: product.userId } }), // 판매자 확인
-      db.user.findUnique({ where: { id: session.id } }),     // 구매자 확인
+      db.user.findUnique({ where: { id: product.userId } }),
+      db.user.findUnique({ where: { id: session.id } }),
     ]);
     console.log("Seller:", seller);
     console.log("Buyer:", buyer);
-  
   
     if (!seller || !buyer) {
       throw new Error("판매자 또는 구매자를 찾을 수 없습니다.");
     }
   
-    // 채팅방 생성
+    // 기존 채팅방 확인
+    const existingChatRoom = await db.chatRoom.findFirst({
+      where: {
+        AND: [
+          { productId: numericId },
+          { users: { some: { id: buyer.id } } },
+        ],
+      },
+    });
+  
+    if (existingChatRoom) {
+      console.log("Existing Chat Room:", existingChatRoom);
+      return redirect(`/chats/${existingChatRoom.id}`);
+    }
+  
+    // 새로운 채팅방 생성
     const room = await db.chatRoom.create({
       data: {
-        productId: product.id,
+        productId: numericId,
         users: {
           connect: [
-            { id: seller.id }, // 판매자 연결
-            { id: buyer.id },  // 구매자 연결
+            { id: seller.id },
+            { id: buyer.id },
           ],
         },
       },
@@ -137,7 +212,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
     });
   
-    redirect(`/chats/${room.id}`);
+    console.log("New Chat Room Created:", room);
+  
+    return redirect(`/chats/${room.id}`);
   };
   return (
     <div className="pb-40">
@@ -184,6 +261,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
                 </form>
             ) : null}
             <form action={createChatRoom}>
+            <input type="hidden" name="id" value={product?.id} />
                 <button className="bg-orange-500 px-4 py-2.5 rounded-md text-white text-sm font-medium hover:bg-orange-600 transition-colors">
                     채팅하기
                 </button>

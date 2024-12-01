@@ -25,6 +25,8 @@ async function getRoom(id: string) {
       return null;
     }
   }
+  console.log('상품 id:',room?.product.id)
+  console.log('채팅방 id:',room?.id)
   return room;
 }
 
@@ -47,6 +49,7 @@ async function getMessages(chatRoomId : string) {
       }
     }
   })
+  
   return messages;
 }
 
