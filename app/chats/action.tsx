@@ -4,6 +4,7 @@ import db from "@/lib/db";
 import getSession from "@/lib/session";
 
 export async function saveMessage(payload: string, chatRoomId: string) {
+  const currentSession = await getSession();
   const session = await getSession();  //세션 (사용자 정보)가져오기
   const message = await db.message.create({
     data: {

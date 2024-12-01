@@ -5,7 +5,7 @@ import db from '@/lib/db';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import { redirect } from 'next/navigation';
-import getSession from '@/lib/session';
+import getSession, { saveSession } from '@/lib/session';
 
 // At least one uppercase letter, one lowercase letter, one number and one special character
 
@@ -131,6 +131,7 @@ export async function createAccount(prevState: any, formData: FormData) {
         session.id = user.id;
         //redirect "/home"
         await session.save();
+        await saveSession(user.id);
         redirect('/profile');
     }
 }

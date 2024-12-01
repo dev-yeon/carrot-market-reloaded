@@ -6,6 +6,7 @@ import getAccessToken from "@/lib/auth/github/getAccessToken";
 import getGithubProfile from "@/lib/auth/github/getGithubProfile";
 import getGithubEmail from "@/lib/auth/github/getGithubEmail";
 import isExistUsername from "@/lib/auth/isExistUsername";
+import { saveSession } from "@/lib/session";
 
 // export async function GET(request: NextRequest) {
 //     try {
@@ -120,6 +121,7 @@ export async function GET(request: NextRequest) {
 
     // 세션 업데이트 및 리디렉션
     await UpdateSession(newUser.id);
+    await saveSession(newUser.id);
     return redirect("/profile");
   } catch (error) {
     console.error("Error handling GET request:", error);
