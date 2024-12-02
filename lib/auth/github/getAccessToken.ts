@@ -21,10 +21,11 @@
 //   return { error, access_token };
 // }
 export default async function getAccessToken(code: string) {
-  const tokenUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/github/login/oauth/access_token`; // 프록시 경로 사용
+  // const tokenUrl = `${process.env.REDIRECT_URI}/api/github/login/oauth/access_token`; // 프록시 경로 사용
+  const tokenUrl = "https://github.com/login/oauth/access_token";
     const clientId = process.env.GITHUB_CLIENT_ID!;
     const clientSecret = process.env.GITHUB_CLIENT_SECRET!;
-    const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/github/complete`;
+    const redirectUri = `${process.env.REDIRECT_URI}/github/complete`;
     console.log("Client ID:", clientId);
     console.log("Client Secret:", clientSecret);
     console.log("Redirect URI:", redirectUri);

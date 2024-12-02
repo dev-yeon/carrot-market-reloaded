@@ -13,6 +13,8 @@ const publicURLs: IPublicURL = {
     "/github/start": true,
     "/github/complete": true,
     "/account/github/complete": true, // 추가
+    "/profile": true,
+    
 };
 export async function middleware(request: NextRequest) {
     console.log("middleware! 요청 경로:", request.nextUrl.pathname);
@@ -31,8 +33,8 @@ export async function middleware(request: NextRequest) {
             }
         } else {
             if (isPublicPath) {
-                console.log("공개 경로에 세션 존재: 리디렉션 /products");
-                return NextResponse.redirect(new URL("/products", request.url));
+                console.log("공개 경로에 세션 존재: 리디렉션 /profile");
+                return NextResponse.redirect(new URL("/profile", request.url));
             }
         }
     } catch (error) {

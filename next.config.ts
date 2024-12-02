@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
             source: "/api/github/:path*", // 프록시 경로
             destination: "https://github.com/:path*", // GitHub API로 요청 전달
           },
+          
         ];
       },
 };
