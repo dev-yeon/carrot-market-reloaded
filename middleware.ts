@@ -86,9 +86,9 @@ export async function middleware(request: NextRequest) {
         // 세션이 있는 경우
         else {
             // 공개 경로 + 이미 /products 페이지에 있을 경우 리디렉션 방지
-            if (isPublicPath && request.nextUrl.pathname !== "/products") {
-                console.log("공개 경로에 세션 존재: 리디렉션 /products");
-                return NextResponse.redirect(new URL("/products", request.url));
+            if (isPublicPath && request.nextUrl.pathname !== "/home") {
+                console.log("공개 경로에 세션 존재: 리디렉션 /home");
+                return NextResponse.redirect(new URL("/home", request.url));
             }
         }
     } catch (error) {
