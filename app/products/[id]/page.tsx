@@ -58,14 +58,20 @@ const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
   tags: ["product-title"],
 });
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-    const resolvedParams = await params;
+export async function generateMetadata({ 
+  params,
+ }: { 
+  params: Promise<{ id: string }> }) {
+    const resolvedParams = await params; // 데이터베이스에 2번 접근하지않기위해 cache 사용 
     const product = await getCachedProductTitle(Number(resolvedParams.id));
     
     return {
       title: product?.title,
     };
   }
+
+
+
 
   export default async function ProductDetail({
     params,
@@ -89,56 +95,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     "use server";
     revalidateTag("xxxx");
   };
-  // const createChatRoom = async () => {
-  //   "use server";
-  //   const session = await getSession();
-  //   console.log("Session:", session);
-  
-  //   if (!session) {
-  //     return redirect("/login");
-  //   }
-  
-  //   // 먼저 product를 가져옵니다.
-  //   const product = await db.product.findUnique({
-  //     where: { id: id },
-  //   });
-  //   console.log("Product:", product);
-  //   if (!product) {
-  //     throw new Error("제품을 찾을 수 없습니다.");
-  //   }
-  
-  //   // product.userId와 session.id를 사용해 사용자 확인
-  //   const [seller, buyer] = await Promise.all([
-  //     db.user.findUnique({ where: { id: product.userId } }), // 판매자 확인
-  //     db.user.findUnique({ where: { id: session.id } }),     // 구매자 확인
-  //   ]);
-  //   console.log("Seller:", seller);
-  //   console.log("Buyer:", buyer);
-  
-  
-  //   if (!seller || !buyer) {
-  //     throw new Error("판매자 또는 구매자를 찾을 수 없습니다.");
-  //   }
-  
-  //   // 채팅방 생성
-  //   const room = await db.chatRoom.create({
-  //     data: {
-  //       productId: product.id,
-  //       users: {
-  //         connect: [
-  //           { id: seller.id }, // 판매자 연결
-  //           { id: buyer.id },  // 구매자 연결
-  //         ],
-  //       },
-  //     },
-  //     select: {
-  //       id: true,
-  //       productId: true,
-  //     },
-  //   });
-  
-  //   redirect(`/chats/${room.id}`);
-  // };
+
   const createChatRoom = async (formData: FormData) => {
     "use server";
   
