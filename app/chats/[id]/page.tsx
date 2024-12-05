@@ -2,6 +2,8 @@ import ChatMessagesList from "@/components/chat-messages-list";
 import db from "@/lib/db";
 import getSession from "@/lib/session";
 import { Prisma } from "@prisma/client";
+import { InferGetServerSidePropsType } from "next";
+import { getServerSideProps } from "next/dist/build/templates/pages";
 import { notFound } from "next/navigation";
 import React from 'react'
 
@@ -19,6 +21,7 @@ async function getRoom(id: string) {
   });
   if (room) {
     const session = await getSession();
+    // const userId = session?.user?.id
     const canSee = Boolean(room.users.find((user) => user.id === session.id!));
     // 채팅방에 있는 사람이 현재 로그인한 사람인지 확인 
     if (!canSee) {
@@ -69,7 +72,10 @@ async function getUserProfile( ) {
 }
 export type InitialMessages = Prisma.PromiseReturnType<typeof getMessages>; 
 
-export default async function ChatRoom({ params }: { params: { id: string } }) {
+export default async function ChatRoom({
+  params,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+// export default async function ChatRoom({ params }: { params: { id: string } }) {
   const room = await getRoom(params.id);
   if (!room) {
     return notFound();

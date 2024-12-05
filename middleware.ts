@@ -51,6 +51,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import getSession from "./lib/session/getSession";
 
+
 interface IPublicURL {
     [key: string]: boolean;
 }
@@ -71,10 +72,10 @@ export async function middleware(request: NextRequest) {
 
     try {
         const session = await getSession(); // getSession 호출
-        console.log("세션 정보:", session);
+        // console.log("세션 정보:", session);
 
         const isPublicPath = publicURLs[request.nextUrl.pathname];
-        console.log("공개 경로 여부:", isPublicPath);
+        // console.log("공개 경로 여부:", isPublicPath);
 
         // 세션이 없는 경우
         if (!session?.id) {

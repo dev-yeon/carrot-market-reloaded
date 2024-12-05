@@ -18,11 +18,11 @@ async function getIsOwner(userId: number) {
   return false;
 }
 
+// 제품에 대한 모든 데이터를 가져오는 Cache (productDetail 페이지에 넣을 제품들의 모든 데이터를 가져오는데 쓰임.)
 async function getProduct(id: number) {
   const product = await db.product.findUnique({
     where: {
       id,
-
     },
     include: {
       user: {
@@ -37,17 +37,19 @@ async function getProduct(id: number) {
   return product;
 }
 
-const getCachedProduct = nextCache(getProduct, ["product-detail"], {
-  tags: ["product-detail"],
-});
 
+const getCachedProduct = nextCache(getProduct, ["product-detail"], {
+  tags: ["product-detail"], 
+});
+// 제품에 대한 제목만 가져오는 Cache ((generateMetadata에서만 쓰임.))
 async function getProductTitle(id: number) {
+
+  console.log("use cache!");
   const product = await db.product.findUnique({
     where: {
       id,
     },
     select: {
-
       title: true,
     },
   });
@@ -69,10 +71,6 @@ export async function generateMetadata({
       title: product?.title,
     };
   }
-
-
-
-
   export default async function ProductDetail({
     params,
   }: {
@@ -87,18 +85,14 @@ export async function generateMetadata({
     if (!product) {
       return notFound();
     }
-      // 여기에서 이미지 URL을 출력합니다.
-//   console.log('Product photo URL:', product.photo);
-  
   const isOwner = await getIsOwner(product.userId);
   const revalidate = async () => {
     "use server";
-    revalidateTag("xxxx");
+    revalidateTag("product-title");
   };
 
   const createChatRoom = async (formData: FormData) => {
     "use server";
-  
     const session = await getSession();
     console.log("Session:", session);
   
@@ -120,6 +114,7 @@ export async function generateMetadata({
       where: { id: numericId },
     });
     console.log("Product:", product);
+    console.log(`isOwner: ${isOwner}`)
   
     if (!product) {
       throw new Error("제품을 찾을 수 없습니다.");
@@ -168,9 +163,7 @@ export async function generateMetadata({
         productId: true,
       },
     });
-  
     console.log("New Chat Room Created:", room);
-  
     return redirect(`/chats/${room.id}`);
   };
   return (
