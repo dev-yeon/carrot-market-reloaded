@@ -1,3 +1,4 @@
+import React from "react";
 import db from "@/lib/db";
 import { formatToWon } from "@/lib/utils";
 import { UserIcon } from "@heroicons/react/24/solid";
@@ -8,7 +9,32 @@ import {
   revalidatePath,
   revalidateTag,
 } from "next/cache";
+
 import getSession from "@/lib/session";
+import { Prisma } from "@prisma/client";
+
+const getCachedProducts = nextCache(getInitialProducts, ["home-products"]);
+
+async function getInitialProducts() {
+  console.log("hit!!!!");
+  const products = await db.product.findMany({
+    select: {
+      title: true,
+      price: true,
+      created_at: true,
+      photo: true,
+      id: true,
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+  return products;
+}
+
+export type InitialProducts = Prisma.PromiseReturnType<
+  typeof getInitialProducts
+>;
 
 async function getIsOwner(userId: number) {
   // const session = await getSession();
