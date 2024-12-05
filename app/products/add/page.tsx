@@ -3,13 +3,26 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { PhotoIcon } from "@heroicons/react/24/solid";
-import { useActionState, useState } from "react";
+import {  useState } from "react";
 import { getUploadUrl, uploadProduct } from "./actions";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema, ProductType } from "./schema";
 
 export default function AddProduct() {
   const [preview, setPreview] = useState("");
   const [uploadUrl, setUploadUrl] = useState("");
-  const [photoId, setImageId] = useState("");
+  const [file, setFile] = useState<File|null>(null);
+
+  const { 
+      register,
+      handleSubmit, 
+      setValue, 
+      setError,
+      formState: {errors},
+     } = useForm<ProductType>({
+    resolver : zodResolver(productSchema), // validation 값을 받을 수 있다. 
+  });
   const onImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { files },
@@ -20,21 +33,21 @@ export default function AddProduct() {
     const file = files[0];
     const url = URL.createObjectURL(file);
     setPreview(url);
+    setFile(file);
     const { success, result } = await getUploadUrl();
     if (success && result) {
       // console.log("Upload URL result:", result); // 결과 확인
       const { id, uploadURL } = result;
-      // console.log("ID:", id); // id 값 확인
-      // console.log("Upload URL:", uploadURL); // uploadURL 값 확인
       setUploadUrl(uploadURL);
-      setImageId(id);
+      setValue(
+        "photo",
+        `https://imagedelivery.net/x2-hEWxzt28Xj_5D6gCpFw/${id}`
+      );
     } else {
       console.error("Failed to get upload URL:", result); // 실패 케이스 확인
-    
     }
   };
-  const interceptAction = async (_: any, formData: FormData) => {
-    const file = formData.get("photo");
+  const onSubmit = handleSubmit(async (data: ProductType) => {
     if (!file) {
       return;
     }
@@ -44,23 +57,47 @@ export default function AddProduct() {
       method: "post",
       body: cloudflareForm,
     });
-    // console.log(await response.text());
     if (response.status !== 200) {
       console.error("Upload failed:", await response.text());
       return;
     }
-    // console.log("PhotoId in interceptAction:", photoId); // photoId 값 확인
-    const photoUrl = `https://imagedelivery.net/x2-hEWxzt28Xj_5D6gCpFw/${photoId}`;
-    formData.set("photo", photoUrl);
-    // console.log("Photo ID:", photoId);
-    // console.log("Upload URL:", uploadUrl);
-    // console.log("Final Photo URL:", photoUrl);
-    return uploadProduct(_, formData); // 
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("price", data.price +"");
+    formData.append("description", data.description);
+    formData.append("photo", data.photo);
+    // return uploadProduct(formData); 
+    const errors = await uploadProduct(formData);
+    if (errors) {
+      setError("photo", {
+        type: "manual",      // 오류 유형. 보통 수동 설정 시 "manual"을 사용
+        message: "사진을 업로드 해주세요." // 사용자에게 표시할 오류 메시지
+      }, {
+        shouldFocus: true    // true로 설정하면 해당 필드에 포커스를 이동
+      });
+      setError("title", {
+        type: "manual",      // 오류 유형. 보통 수동 설정 시 "manual"을 사용
+        message: "제목을 써주세요." // 사용자에게 표시할 오류 메시지
+      }, {
+        shouldFocus: true    // true로 설정하면 해당 필드에 포커스를 이동
+      });
+      setError("description", {
+        type: "manual",      // 오류 유형. 보통 수동 설정 시 "manual"을 사용
+        message: "설명을 작성 해주세요." // 사용자에게 표시할 오류 메시지
+      }, {
+        shouldFocus: true    // true로 설정하면 해당 필드에 포커스를 이동
+      });
+    }
+  });
+  const onValid = async () => {
+    await onSubmit();
   };
-  const [state, action] =  useActionState(interceptAction, null);
+  // const [state, action] =  useActionState(interceptAction, null);
+  // const onValid = (data: ProductType)
+  console.log("register:::",register("title"));
   return (
     <div>
-      <form action={action} className="p-5 flex flex-col gap-5">
+      <form action={onValid}  className="p-5 flex flex-col gap-5">
         <label
           htmlFor="photo"
           className="border-2 aspect-square flex items-center justify-center flex-col text-neutral-300 border-neutral-300 rounded-md border-dashed cursor-pointer bg-center bg-cover"
@@ -73,7 +110,7 @@ export default function AddProduct() {
               <PhotoIcon className="w-20" />
               <div className="text-neutral-400 text-sm">
                 사진을 추가해주세요.
-                {state?.fieldErrors.photo}
+                {errors?.photo?.message}
               </div>
             </>
           ) : null}
@@ -87,25 +124,25 @@ export default function AddProduct() {
           className="hidden"
         />
         <Input
-          name="title"
           required
           placeholder="제목"
           type="text"
-          errors={state?.fieldErrors.title}
+          {...register("title")}
+          errors={[errors.title?.message ?? ""]}
         />
         <Input
-          name="price"
           type="number"
           required
+          {...register("price")}
           placeholder="가격"
-          errors={state?.fieldErrors.price}
+          errors={[errors.price?.message ?? ""]}
         />
         <Input
-          name="description"
           type="text"
           required
+          {...register("description")}
           placeholder="자세한 설명"
-          errors={state?.fieldErrors.description}
+          errors={[errors.description?.message ?? ""]}
         />
         <Button text="작성 완료" />
       </form>

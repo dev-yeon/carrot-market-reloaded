@@ -1,10 +1,10 @@
 "use server";
 
-import { z } from "zod";
 import db from "@/lib/db";
 import getSession from "@/lib/session";
 import { redirect } from "next/navigation";
 import { promises } from "dns";
+import { productSchema } from "./schema";
 
 // Cloudflare API 응답 타입 정의
 type CloudflareUploadResponse = {
@@ -17,22 +17,9 @@ type CloudflareUploadResponse = {
   messages?: string[];
 };
 
-const productSchema = z.object({
-  photo: z.string({
-    required_error: "Photo is required",
-  }),
-  title: z.string({
-    required_error: "Title is required",
-  }),
-  description: z.string({
-    required_error: "Description is required",
-  }),
-  price: z.coerce.number({
-    required_error: "Price is required",
-  }),
-});
 
-export async function uploadProduct(_: any, formData: FormData) {
+
+export async function uploadProduct(formData : FormData) {
   const data = {
     photo: formData.get("photo"),
     title: formData.get("title"),
