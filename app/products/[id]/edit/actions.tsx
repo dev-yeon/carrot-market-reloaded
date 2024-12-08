@@ -93,7 +93,7 @@ export async function editProduct(formData: FormData) {
         id: true,
       },
     });
-    revalidatePath("/home");
+    revalidatePath("/products");
     revalidateTag("product-detail");
     redirect(`/products/${product.id}`);
   }
