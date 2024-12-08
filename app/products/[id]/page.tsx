@@ -12,6 +12,7 @@ import {
 
 import getSession from "@/lib/session";
 import { Prisma } from "@prisma/client";
+import Link from "next/link";
 
 const getCachedProducts = nextCache(getInitialProducts, ["home-products"]);
 
@@ -37,12 +38,13 @@ export type InitialProducts = Prisma.PromiseReturnType<
 >;
 
 async function getIsOwner(userId: number) {
-  // const session = await getSession();
-  // if (session.id) {
-  //   return session.id === userId;
-  // }
+  const session = await getSession();
+  if (session.id) {
+    return session.id === userId;
+  }
   return false;
 }
+
 
 // 제품에 대한 모든 데이터를 가져오는 Cache (productDetail 페이지에 넣을 제품들의 모든 데이터를 가져오는데 쓰임.)
 async function getProduct(id: number) {
@@ -59,7 +61,6 @@ async function getProduct(id: number) {
       },
     },
   });
-  
   return product;
 }
 
@@ -69,7 +70,6 @@ const getCachedProduct = nextCache(getProduct, ["product-detail"], {
 });
 // 제품에 대한 제목만 가져오는 Cache ((generateMetadata에서만 쓰임.))
 async function getProductTitle(id: number) {
-
   console.log("use cache!");
   const product = await db.product.findUnique({
     where: {
@@ -85,7 +85,6 @@ async function getProductTitle(id: number) {
 const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
   tags: ["product-title"],
 });
-
 export async function generateMetadata({ 
   params,
  }: { 
@@ -116,6 +115,18 @@ export async function generateMetadata({
     "use server";
     revalidateTag("product-title");
   };
+
+const onDelete = async () => {
+  'use server';
+  await db.product.delete({
+    where: {
+      id,
+    },
+    select: null,
+  });
+  revalidateTag('product-detail');
+  redirect('/home')
+}
 
   const createChatRoom = async (formData: FormData) => {
     "use server";
@@ -229,13 +240,29 @@ export async function generateMetadata({
             {formatToWon(product.price)}원
         </span>
         <div className="flex gap-2">
-            {isOwner ? (
+            {/* {isOwner ? (
                 <form action={revalidate}>
                     <button className="bg-red-500 px-4 py-2.5 rounded-md text-white text-sm font-medium hover:bg-red-600 transition-colors">
                         Revalidate title cache
                     </button>
                 </form>
-            ) : null}
+            ) : null} */}
+          {isOwner ? (
+            <form action={onDelete}>
+              <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
+                삭제하기
+              </button>
+            </form>
+          ) : null}
+                    {isOwner ? (
+            <Link
+              className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold"
+              href={`/products/${id}/edit`}
+            >
+              수정하기
+            </Link>
+          ) : null}
+
             <form action={createChatRoom}>
             <input type="hidden" name="id" value={product?.id} />
                 <button className="bg-orange-500 px-4 py-2.5 rounded-md text-white text-sm font-medium hover:bg-orange-600 transition-colors">
@@ -249,12 +276,18 @@ export async function generateMetadata({
   );
 }
 
+export const dynamicParams = true; 
+ 
+
 export async function generateStaticParams() {
+  //productDetail 함수가 받을 가능성이 있는 parameter들이 들어있는 
+  //array를 받아와야 함 
   const products = await db.product.findMany({
     select: {
       id: true,
     },
   });
   return products.map((product) => ({ id: product.id + "" }));
+  //product의 id들을 string으로 변환
   
 }
