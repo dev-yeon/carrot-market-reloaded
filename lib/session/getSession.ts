@@ -20,9 +20,12 @@ interface SessionContent {
 
 export default async function getSession() {
     return getIronSession<SessionContent>(await cookies(), {
+      
         cookieName: 'delicious-carrot',
-        password: process.env.COOKIE_PASSWORD! || '32자_이상의_임의의_긴_비밀번호'
+        password: process.env.COOKIE_PASSWORD! || '32자_이상의_임의의_긴_비밀번호',
+        
     });
+ 
 }
 export async function saveSession(userId: User["id"]) {
     const session = await getIronSession<SessionContent>(await cookies(), {

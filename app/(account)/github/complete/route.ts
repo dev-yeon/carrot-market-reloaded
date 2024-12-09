@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
     // 세션 업데이트 및 리디렉션
     await UpdateSession(newUser.id);
     await saveSession(newUser.id);
-    return redirect("/profile");
+    return redirect("/home");
   } catch (error) {
     console.error("Error handling GET request:", error);
     return new Response(

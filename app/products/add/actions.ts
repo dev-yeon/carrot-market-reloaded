@@ -31,6 +31,8 @@ export async function uploadProduct(formData : FormData) {
     return result.error.flatten();
   } else {
     const session = await getSession();
+    console.log("Session ID:", session.id);
+  
     if (session.id) {
       const product = await db.product.create({
         data: {

@@ -13,7 +13,7 @@ const getUser = async (userId: number) => {
       id: userId,
     },
     include : {
-      Product : {
+      products : {
         select : {
           id: true,
           title: true,
@@ -117,7 +117,7 @@ const UserProfile = async ({params} : {params : {id: string}}) =>{
       <div className="flex flex-col gap-3">
         <h2 className="texl-xl">판매한 상품</h2>
         <ul className="flex overflow-x-auto gap-5 pb-3">
-          {user.Product.map((product)=> (
+          {user.products.map((product)=> (
             <Link
               className="flex flex-col gap-3 min-w-20"
               key = {product.id}

@@ -2,6 +2,7 @@
 
 import db from "@/lib/db";
 import getSession from "@/lib/session";
+import { revalidateTag } from "next/cache";
 
 export async function saveMessage(payload: string, chatRoomId: string) {
   const currentSession = await getSession();
@@ -12,7 +13,11 @@ export async function saveMessage(payload: string, chatRoomId: string) {
       chatRoomId, // 채팅방 id
       userId: session?.id!, // 사용자 id
     },
+    select :{
+      id: true
+    }
   });
+  revalidateTag("chat-list");
 }
 
 //기존 채팅방 찾기 
