@@ -64,7 +64,15 @@ export default function ProductList({ initialProducts }: ProductListProps) {
     return (
         <div className="p-5 flex flex-col gap-10">
             {products.map((product) => (
-                <ListProduct key={product.id} {...product} />
+                  <ListProduct
+                  key={product.id}
+                  id={product.id}
+                  title={product.title}
+                  created_at={product.created_at}
+                  price={product.price}
+                  photo={product.photo}
+                  isSold={product.isSold} // isSold 전달
+                />
             ))}
             {/* {!isLastPage ? (
                 <span

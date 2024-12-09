@@ -18,6 +18,16 @@ export async function saveMessage(payload: string, chatRoomId: string) {
     }
   });
   revalidateTag("chat-list");
+
+  return { success: true, messageId: message.id }; // 반환값 명확화
+}
+
+export async function markMessageAsRead(messageId: number) {
+  await db.message.update({
+    where: { id: messageId },
+    data: { isRead: true },
+  });
+  revalidateTag("chat-list");
 }
 
 //기존 채팅방 찾기 

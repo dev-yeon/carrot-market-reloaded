@@ -7,6 +7,7 @@ export async function getMoreProducts(page: number) {
             price: true,
             created_at: true,
             photo: true,
+            isSold: true,
             id: true
         },
         skip: page * 1,

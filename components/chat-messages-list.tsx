@@ -122,10 +122,12 @@ export default function ChatMessagesList({
           </Link>
           <h1 className="text-2xl">{product.title}</h1>
         </div>
-        {product.isSold ? (
+        {/* 현재 로그인한 사용자가 판매자일 경우 리뷰 버튼을 보이지 않게 함, 
+         그리고 판매 완료일 때만 리뷰 버튼을 표시함 */}
+        {product.isSold && product.userId !== userId ? (
           <Link
             className="py-2 px-3 bg-orange-500 rounded-md cursor-pointer text-white"
-            href={`/user/${
+            href={`/profile/user/${
               product.userId === userId ? buyerId : product.userId
             }/review`}
           >

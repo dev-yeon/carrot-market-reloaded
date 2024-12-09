@@ -5,6 +5,7 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import Products from "@/app/(tabs)/home/page";
+import { formatToTimeAgo } from "@/lib/utils";
 
 
 const getUser = async (userId: number) => {
@@ -82,9 +83,28 @@ const getCachedBoughtProducts = (userId: number) => {
   return cachedOperation(userId);
 };
 
-//리뷰는 나중에 
 async function getReviews(userId: number) {
-  // const reviews = await db
+  const reviews = await db.review.findMany({
+    where: {
+      userId,
+    },
+    select: {
+      id: true,
+      payload: true,
+      created_at: true,
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+  return reviews;
+}
+
+const getCachedReviews = (userId: number) => {
+  const cachedOperation = nextCache(getReviews, [`reviews-${userId}`], {
+    tags: [`reviews-${userId}`],
+  });
+  return cachedOperation(userId);
 };
 
 const UserProfile = async ({params} : {params : {id: string}}) =>{
@@ -92,7 +112,7 @@ const UserProfile = async ({params} : {params : {id: string}}) =>{
   if (isNaN(id)) return notFound();
   const user = await getCachedUser(id);
   const boughtProducts = await getCachedBoughtProducts(id);
-  // const reviews = await getCachedReviews(id); //리뷰는 나중에 
+  const reviews = await getCachedReviews(id);
 
   return (
     <div className="flex flex-col gap-7 p-5">
@@ -166,8 +186,19 @@ const UserProfile = async ({params} : {params : {id: string}}) =>{
       </div>
       <div className="flex flex-col gap-3">
         <h2 className="text-xl">이 사용자에 대한 리뷰</h2>
-        {/* <ul className="flex flex-col gap-5 max-h-64 overflow-y-auto py-3">
-        </ul> */}
+        <ul className="flex flex-col gap-5 max-h-64 overflow-y-auto py-3">
+          {reviews.map((review) => (
+            <li
+              key={review.id}
+              className="flex flex-col gap-2 pl-5 border-l-neutral-400 border-l"
+            >
+              <h3 className="text-md">{review.payload}</h3>
+              <span className="text-sm text-neutral-500">
+                {formatToTimeAgo(review.created_at.toString())}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )

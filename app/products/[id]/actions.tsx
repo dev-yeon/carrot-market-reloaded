@@ -2,7 +2,6 @@
 import db from "@/lib/db";
 import { revalidatePath, revalidateTag } from "next/cache";
 
- 
 
 
 export const onDelete = async (id: number, isOwner : boolean) => {

@@ -10,6 +10,7 @@ async function getInitialProducts() {
             title: true,
             price: true,
             created_at: true,
+            isSold:true,
             photo: true,
             id: true
         },

@@ -13,6 +13,7 @@ import {
 import getSession from "@/lib/session";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
+import ErrorPage from "@/components/error-page";
 
 const getCachedProducts = nextCache(getInitialProducts, ["home-products"]);
 
@@ -52,7 +53,14 @@ async function getProduct(id: number) {
     where: {
       id,
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      price: true,
+      photo: true,
+      isSold: true,
+      userId: true,
       user: {
         select: {
           username: true,
@@ -127,6 +135,18 @@ const onDelete = async () => {
   revalidateTag('product-detail');
   redirect('/home')
 }
+const onMarkAsSold = async () => {
+  "use server";
+
+  await db.product.update({
+    where: { id },
+    data: { isSold: true }, // isSold 상태를 true로 변경
+  });
+
+  revalidateTag("product-detail"); // 캐시 갱신
+  revalidatePath("/products"); // 경로 캐시 갱신
+};
+
 
   const createChatRoom = async (formData: FormData) => {
     "use server";
@@ -134,7 +154,8 @@ const onDelete = async () => {
     console.log("Session:", session);
   
     if (!session) {
-      return redirect("/login");
+      redirect("/login");
+      return;
     }
   
     // FormData에서 `id` 추출
@@ -150,6 +171,10 @@ const onDelete = async () => {
     const product = await db.product.findUnique({
       where: { id: numericId },
     });
+
+  if (!product) {
+    throw new Error("제품을 찾을 수 없습니다.");
+  }
     console.log("Product:", product);
     console.log(`isOwner: ${isOwner}`)
   
@@ -207,11 +232,16 @@ const onDelete = async () => {
     <div className="pb-40">
       <div className="relative aspect-square">
         <Image
-          className="object-cover"
-          fill
+          className={`object-cover fill ${product.isSold ? "grayscale opacity-50" : ""}`}
           src={`${product.photo}/public`}
+          fill
           alt={product.title}
         />
+          {product.isSold && (
+        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 text-white text-3xl font-bold">
+          판매 완료
+        </div>
+      )}
       </div>
       <div className="p-5 flex items-center gap-3 border-b border-neutral-700">
         <div className="size-10 overflow-hidden rounded-full">
@@ -240,6 +270,13 @@ const onDelete = async () => {
             {formatToWon(product.price)}원
         </span>
         <div className="flex gap-2">
+        {isOwner && !product.isSold ? (
+        <form action={onMarkAsSold}>
+          <button className="bg-green-500 px-5 py-2.5 rounded-md text-white font-semibold hover:bg-green-600 transition-colors">
+            판매 완료 처리
+          </button>
+        </form>
+      ) : null}
             {/* {isOwner ? (
                 <form action={revalidate}>
                     <button className="bg-red-500 px-4 py-2.5 rounded-md text-white text-sm font-medium hover:bg-red-600 transition-colors">
