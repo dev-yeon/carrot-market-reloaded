@@ -284,14 +284,15 @@ const onMarkAsSold = async () => {
                     </button>
                 </form>
             ) : null} */}
-          {isOwner ? (
+          {isOwner  ?   (
             <form action={onDelete}>
               <button className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold">
                 삭제하기
               </button>
             </form>
           ) : null}
-                    {isOwner ? (
+          {/* isOwner이면서, 상품이 isSold이면 수정하기 버튼은 없어져야 하고 삭제만 가능해야 함. */}
+          {isOwner && !product.isSold ?  (
             <Link
               className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold"
               href={`/products/${id}/edit`}
@@ -299,13 +300,25 @@ const onMarkAsSold = async () => {
               수정하기
             </Link>
           ) : null}
+    
+          {/* {isOwner ? (
+            <Link
+            className="bg-red-500 px-5 py-2.5 rounded-md text-white font-semibold"
+            href={`/products/${id}/edit`}
+            >
+              수정하기
+            </Link>
+          ) : null} */}
+          {/* isOwner가아니고, product가 isSold 상태면 채팅하기 버튼은 보이지 않아야 함. */}
+      {!isOwner && !product.isSold ? (
+              <form action={createChatRoom}>
+              <input type="hidden" name="id" value={product?.id} />
+                  <button className="bg-orange-500 px-4 py-2.5 rounded-md text-white text-sm font-medium hover:bg-orange-600 transition-colors">
+                      채팅하기
+                  </button>
+              </form>
+          ) : null}
 
-            <form action={createChatRoom}>
-            <input type="hidden" name="id" value={product?.id} />
-                <button className="bg-orange-500 px-4 py-2.5 rounded-md text-white text-sm font-medium hover:bg-orange-600 transition-colors">
-                    채팅하기
-                </button>
-            </form>
         </div>
     </div>
 </nav>

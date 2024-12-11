@@ -74,7 +74,7 @@ export default function ProductList({ initialProducts }: ProductListProps) {
                   isSold={product.isSold} // isSold 전달
                 />
             ))}
-            {/* {!isLastPage ? (
+            {!isLastPage ? (
                 <span
                     ref={trigger}
                     style={{
@@ -84,7 +84,7 @@ export default function ProductList({ initialProducts }: ProductListProps) {
                 >
                     {isLoading ? '로딩 중' : 'Load more'}
                 </span>
-            ) : null} */}
+            ) : null}
         </div>
     );
 }
