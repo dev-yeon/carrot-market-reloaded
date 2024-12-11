@@ -53,7 +53,6 @@ export async function editProduct(formData: FormData) {
       throw new Error("유효하지 않은 Product ID입니다.");
     }
 
- 
   const data = {
     // id: formData.get("id"),
     id: Number(id), // 문자열에서 숫자로 변환

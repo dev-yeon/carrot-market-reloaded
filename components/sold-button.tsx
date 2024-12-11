@@ -29,6 +29,8 @@ export default function ChatMessagesList({
 }: ChatMessagesListProps) {
   const [messages, setMessages] = useState(initialMessages);
   const [isSold, setIsSold] = useState(product.isSold);
+// setisSold 보다 먼저alert를 실행하는것 
+// 순서를 바꾸면 됨 
 
   const handleMarkAsSold = async () => {
     try {
