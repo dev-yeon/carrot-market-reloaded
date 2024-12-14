@@ -157,7 +157,6 @@ import Link from "next/link";
 export default async function Chats() {
     const chatRooms = await getChatRooms();
     return (
-        
         <div className="p-5">
             <div className="flex flex-col gap-5">
                 <h1 className="text-white text-4xl">내 채팅방</h1>
