@@ -50,8 +50,8 @@ export default function ProductList({ initialProducts }: ProductListProps) {
             },
             {
                 threshold: 1.0, // 요소가 100% 보일 때 콜백 실행
-                rootMargin: '0px 0px -100px 0px' // 하단에서 100px 위에서 트리거
-            }
+                rootMargin: '0px 0px -60px 0px', // 하단에서 100px 위에서 트리거
+            },
         );
         if (trigger.current) {
             observer.observe(trigger.current);
@@ -64,21 +64,21 @@ export default function ProductList({ initialProducts }: ProductListProps) {
     return (
         <div className="p-5 flex flex-col gap-10">
             {products.map((product) => (
-                  <ListProduct
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  created_at={product.created_at}
-                  price={product.price}
-                  photo={product.photo}
-                  isSold={product.isSold} // isSold 전달
+                <ListProduct
+                    key={product.id}
+                    id={product.id}
+                    title={product.title}
+                    created_at={product.created_at}
+                    price={product.price}
+                    photo={product.photo}
+                    isSold={product.isSold} // isSold 전달
                 />
             ))}
             {!isLastPage ? (
                 <span
                     ref={trigger}
                     style={{
-                        marginTop: `${(page + 1) * 150}vh`
+                        marginTop: `${(page + 1) * 100}vh`,
                     }}
                     className=" mb-96 text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-90 active:scale-95"
                 >
